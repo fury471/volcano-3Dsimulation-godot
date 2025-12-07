@@ -2,6 +2,11 @@
 
 [ext_resource type="Shader" uid="uid://ce7nvvl0dgncv" path="res://volcano.gdshader" id="1_ig7tw"]
 
+[sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
+size = Vector2(20, 20)
+subdivide_width = 200
+subdivide_depth = 200
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ig7tw"]
 render_priority = 0
 shader = ExtResource("1_ig7tw")
@@ -17,11 +22,6 @@ shader_parameter/color_rock = Color(0.1, 0.1, 0.1, 1)
 shader_parameter/color_snow = Color(0.9, 0.9, 0.9, 1)
 shader_parameter/snow_line = 0.6
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
-size = Vector2(20, 20)
-subdivide_width = 200
-subdivide_depth = 200
-
 [node name="Main" type="Node3D"]
 
 [node name="MainCamera" type="Camera3D" parent="."]
@@ -30,8 +30,8 @@ keep_aspect = 0
 
 [node name="VolcanoMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45356393, 0.3270502, 0.30256557)
-material_override = SubResource("ShaderMaterial_ig7tw")
 mesh = SubResource("PlaneMesh_7dm0k")
+surface_material_override/0 = SubResource("ShaderMaterial_ig7tw")
 
 [node name="SunLight" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.02585, 20, 0)
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, -11.02585, 20, 0)
