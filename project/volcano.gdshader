@@ -1,120 +1,85 @@
 shader_type spatial;
-render_mode unshaded; // No lighting calculations (flat colors)
 
-// --- Settings: Shape ---
-group_uniforms Shape_Settings;
-uniform float volcano_height : hint_range(1.0, 50.0) = 14.0;
-uniform float base_radius    : hint_range(1.0, 50.0) = 11.0;
-uniform float crater_radius  : hint_range(0.01, 1.0) = 0.15;
-uniform float crater_depth   : hint_range(0.0, 5.0)  = 0.15;
-uniform float slope_steepness: hint_range(1.0, 5.0)  = 2.0; // Controls the curve of the cone
+uniform float cone_height = 3.0;
+uniform float cone_radius = 4.0;
+uniform float cone_steepness = 2.0; // 圆锥陡峭度，>1 越上越陡
 
-// --- Settings: Noise (Detail) ---
-group_uniforms Noise_Settings;
-uniform float noise_amount   : hint_range(0.0, 2.0)  = 0.2;
-uniform float noise_scale    : hint_range(1.0, 20.0) = 6.0;
+uniform float crater_depth = 1.0;
+uniform float crater_radius = 1.0;
 
-// --- Settings: Colors ---
-group_uniforms Color_Settings;
-uniform vec3 color_lava : source_color = vec3(0.6, 0.1, 0.1);
-uniform vec3 color_rock : source_color = vec3(0.1, 0.1, 0.1);
-uniform vec3 color_snow : source_color = vec3(0.9, 0.9, 0.9);
-uniform float snow_line : hint_range(0.0, 1.0) = 0.6; // Height % where snow starts
+uniform sampler2D noise_tex;
+uniform float noise_scale = 1.0; 
+uniform float noise_strength = 0.3;
+uniform float terrain_radius = 15.0; // 噪声影响的最大半径，超出就变平
 
-// --- Varyings ---
-// Used to pass data from Vertex -> Fragment shader
-varying float v_local_height_normalized;
-
-// --- Helper Functions: Randomness ---
-// Standard pseudo-random hash
-float random(float n) {
-	return fract(sin(n) * 43758.5453123);
+float volcano_height(vec3 pos){ //高度函数，用来建模火山圆锥和火山口，同时计算一点的高度值
+	float r = length(pos.xz); //一个点到(0,0)的距离，用作r
+	float h = 0.0;
+	
+	if (r<cone_radius){	 // 圆锥半径以内的地方抬起
+		float t = 1.0 - smoothstep(0.0, cone_radius, r);  // r越小，离中心越近，t越接近1，同时加smooth过度
+		t = clamp(t, 0.0, 1.0);
+		float t_cone = pow(t, cone_steepness);
+		h = t_cone * cone_height;		
+		
+		if (r<crater_radius){  //火山口
+			float t_crater = 1.0 - r/crater_radius;
+			t_crater = clamp(t_crater, 0.0, 1.0);
+			float crater_h = -t_crater * crater_depth;
+			
+			h =  h + crater_h;
+		}
+	}	
+	return h;
 }
 
-// 2D Value Noise
-float value_noise(vec2 uv) {
-	vec2 i = floor(uv);
-	vec2 f = fract(uv);
-
-	// Cubic smoothing (hermite interpolation) for smoother noise
-	f = f * f * (3.0 - 2.0 * f);
-
-	float a = random(dot(i, vec2(1.0, 57.0)));
-	float b = random(dot(i + vec2(1.0, 0.0), vec2(1.0, 57.0)));
-	float c = random(dot(i + vec2(0.0, 1.0), vec2(1.0, 57.0)));
-	float d = random(dot(i + vec2(1.0, 1.0), vec2(1.0, 57.0)));
-
-	return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
-}
-
-// Fractal Brownian Motion (FBM) - Layers noise for detail
-float fbm(vec2 uv) {
-	float total_value = 0.0;
-	float amplitude = 0.5;
-
-	// Layer the noise 4 times
-	for (int i = 0; i < 4; i++) {
-		total_value += amplitude * value_noise(uv);
-		uv *= 2.3;      // Increase frequency (detail)
-		amplitude *= 0.5; // Decrease strength
-	}
-	return total_value;
-}
-
-// --- Main Logic: Height Calculation ---
-float calculate_volcano_height(vec2 pos_normalized) {
-	// 1. Calculate distance from center (0.0 to 1.0)
-	float dist_from_center = length(pos_normalized);
-
-	// 2. Invert distance so center is 1.0 and edge is 0.0
-	float base_shape = clamp(1.0 - dist_from_center, 0.0, 1.0);
-
-	// 3. Apply power function to curve the sides (make it cone-like)
-	float cone_shape = pow(base_shape, slope_steepness);
-
-	// 4. Create the Crater
-	// smoothstep creates a value from 0 to 1 based on radius
-	float crater_factor = smoothstep(0.0, crater_radius, dist_from_center);
-	// Invert logic: We want to subtract height inside the crater
-	float crater_cutout = (1.0 - crater_factor) * crater_depth;
-
-	float final_shape = cone_shape - crater_cutout;
-
-	// 5. Apply Noise (Erosion)
-	float erosion = fbm(pos_normalized * noise_scale) - 0.5;
-	final_shape += noise_amount * erosion;
-
-	return final_shape * volcano_height;
+float get_noise_height(vec3 pos){ 
+	
+	float h = volcano_height(pos);	
+	float r = length(pos.xz);
+	float noise_factor = 1.0 - clamp(r / terrain_radius, 0.0, 1.0); // 噪声强度因子,中心 = 1，半径 >= terrain_radius 时 = 0，线性减弱
+	
+	vec2 noise_uv = pos.xz * noise_scale; //用噪声生成复杂地形
+	float n = texture(noise_tex, noise_uv).r; //查表生成一个0到1的数字
+	n = n * 2.0 - 1.0; //映射到-1 1 满足上下起伏
+	
+	h = h + n * noise_strength * noise_factor;
+	return h;
 }
 
 void vertex() {
-	// Normalize world coordinates to roughly [-1, 1] range based on base_radius
-	vec2 pos_xz_normalized = VERTEX.xz / base_radius;
+	// Called for every vertex the material is visible on.
+	vec3 base_pos = VERTEX;
+    float h = get_noise_height(base_pos);
 
-	// Calculate and apply height
-	float h = calculate_volcano_height(pos_xz_normalized);
-	VERTEX.y = h;
-
-	// Pass the normalized height (0.0 to 1.0) to the fragment shader
-	// We use clamp to ensure colors don't glitch if noise pushes it slightly out of bounds
-	v_local_height_normalized = clamp(h / volcano_height, 0.0, 1.0);
+	vec3 pos = base_pos;	
+	pos.y = h + pos.y;	
+	
+	float eps = 0.1; //计算某个点周围四个点高度值
+	float heightL = get_noise_height(base_pos + vec3(-eps, 0.0, 0.0));
+	float heightR = get_noise_height(base_pos + vec3( eps, 0.0, 0.0));
+	float heightD = get_noise_height(base_pos + vec3(0.0, 0.0, -eps));
+	float heightU = get_noise_height(base_pos + vec3(0.0, 0.0,  eps));
+	
+	// 用四个高度值构造附近的四个点的确切位置
+	vec3 pointL = vec3(base_pos.x - eps, heightL, base_pos.z); // 左 
+	vec3 pointR = vec3(base_pos.x + eps, heightR, base_pos.z); // 右
+	vec3 pointD = vec3(base_pos.x, heightD, base_pos.z - eps); // 后 -z
+	vec3 pointU = vec3(base_pos.x, heightU, base_pos.z + eps); // 前 +z
+	
+	vec3 tangent = pointR - pointL; //x方向切线
+	vec3 binormal = pointU - pointD; //z方向切线,副切线
+	vec3 normal = normalize(cross(binormal, tangent)); //算出法线
+	
+	NORMAL = normal;
+	
+	VERTEX = pos;
 }
 
 void fragment() {
-	// --- Coloring Logic ---
-
-	// 1. Base Gradient: Mix Rock and Snow based on height
-	vec3 base_color = mix(color_rock, color_snow, smoothstep(snow_line - 0.1, snow_line + 0.1, v_local_height_normalized));
-
-	// 2. Lava Center: If we are very low (crater bottom), show lava
-	// We check if height is very low (crater is usually the lowest point aside from the base)
-	// Note: This assumes the crater digs deep enough to be distinct.
-	float lava_factor = 1.0 - smoothstep(0.0, 0.1, v_local_height_normalized);
-	vec3 final_color = mix(base_color, color_lava, lava_factor);
-
-	ALBEDO = final_color;
+	// Called for every pixel the material is visible on.
+	ALBEDO = vec3(1.0, 1.0, 1.0);
 }
-
 
 //void light() {
 //	// Called for every pixel for every light affecting the material.
