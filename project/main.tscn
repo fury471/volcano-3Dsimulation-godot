@@ -1,12 +1,37 @@
-[gd_scene load_steps=2 format=3 uid="uid://cqow47bch5ocs"]
+[gd_scene load_steps=4 format=3 uid="uid://cqow47bch5ocs"]
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_7dm0k"]
+[ext_resource type="Shader" uid="uid://ce7nvvl0dgncv" path="res://volcano.gdshader" id="1_ig7tw"]
 
-[node name="Node3D" type="Node3D"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ig7tw"]
+render_priority = 0
+shader = ExtResource("1_ig7tw")
+shader_parameter/volcano_height = 14.0
+shader_parameter/base_radius = 11.0
+shader_parameter/crater_radius = 0.15
+shader_parameter/crater_depth = 0.15
+shader_parameter/slope_steepness = 2.0
+shader_parameter/noise_amount = 0.2
+shader_parameter/noise_scale = 6.0
+shader_parameter/color_lava = Color(0.6, 0.1, 0.1, 1)
+shader_parameter/color_rock = Color(0.1, 0.1, 0.1, 1)
+shader_parameter/color_snow = Color(0.9, 0.9, 0.9, 1)
+shader_parameter/snow_line = 0.6
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.37555277, 0.5940201, 2.799503)
-fov = 104.06249
+[sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
+size = Vector2(20, 20)
+subdivide_width = 200
+subdivide_depth = 200
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("CylinderMesh_7dm0k")
+[node name="Main" type="Node3D"]
+
+[node name="MainCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9921147, -0.12533323, 0, 0.12533323, 0.9921147, 0, 0, 22)
+keep_aspect = 0
+
+[node name="VolcanoMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45356393, 0.3270502, 0.30256557)
+material_override = SubResource("ShaderMaterial_ig7tw")
+mesh = SubResource("PlaneMesh_7dm0k")
+
+[node name="SunLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.02585, 20, 0)
