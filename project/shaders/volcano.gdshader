@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode unshaded; // No lighting calculations (flat colors)
+//render_mode unshaded; // No lighting calculations (flat colors)
 
 // --- Settings: Shape ---
 group_uniforms Shape_Settings;
@@ -114,16 +114,13 @@ float calculate_lava_mask(vec2 pos_normalized, float height_normalized) {
 }
 
 // --- Faking lava flow veins ---
-vec3 lava_flow_veins(vec2 pos_normalized){
+float lava_flow_veins(vec2 pos_normalized){
 	vec2 uv = pos_normalized * 27.0; // scale controls vein size
-    uv += vec2(TIME, TIME);
+    uv += vec2(TIME * 0.35, TIME * 0.35);
     float noise = fbm(uv);
     float veins = smoothstep(0.2, 0.8, noise); // 0..1, bright streaks
 
-    // Color variation: darker crust + brighter hot veins
-    vec3 lava_cool = color_lava * 0.4;
-    vec3 lava_hot  = color_lava * 1.5;
-    return mix(lava_cool, lava_hot, veins);
+    return veins;
 }
 
 void vertex() {
@@ -154,11 +151,17 @@ void fragment() {
 	float lava_mask = calculate_lava_mask(v_local_position.xz / base_radius, v_local_height_normalized);
 
 	// Faking Lava flow (animated)
-	vec3 lava_color = lava_flow_veins(v_local_position.xz / base_radius);
+	// Color variation: darker crust + brighter hot veins
+    vec3 lava_cool = color_lava * 0.4;
+    vec3 lava_hot  = color_lava * 1.5;
+	float veins = lava_flow_veins(v_local_position.xz / base_radius);
+	vec3 lava_color = mix(lava_cool, lava_hot, veins);
 
 	vec3 final_color = mix(base_color, lava_color, lava_mask);
 
 	ALBEDO = final_color;
+	EMISSION = lava_color * lava_mask * (2.0 + 6.0 * veins);
+
 }
 
 
