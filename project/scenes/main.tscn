@@ -1,21 +1,22 @@
 [gd_scene load_steps=4 format=3 uid="uid://cqow47bch5ocs"]
 
-[ext_resource type="Shader" uid="uid://ce7nvvl0dgncv" path="res://volcano.gdshader" id="1_ig7tw"]
+[ext_resource type="Shader" uid="uid://ce7nvvl0dgncv" path="res://shaders/volcano.gdshader" id="1_o5qli"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
-size = Vector2(20, 20)
+size = Vector2(30, 30)
 subdivide_width = 200
 subdivide_depth = 200
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ig7tw"]
 render_priority = 0
-shader = ExtResource("1_ig7tw")
-shader_parameter/volcano_height = 14.0
-shader_parameter/base_radius = 11.0
-shader_parameter/crater_radius = 0.15
-shader_parameter/crater_depth = 0.15
-shader_parameter/slope_steepness = 2.0
-shader_parameter/noise_amount = 0.2
+shader = ExtResource("1_o5qli")
+shader_parameter/volcano_height = 22.0000009975
+shader_parameter/base_radius = 14.1770006259075
+shader_parameter/crater_radius = 0.26800001203148005
+shader_parameter/crater_depth = 0.654000031065
+shader_parameter/slope_steepness = 1.5870000278825
+shader_parameter/lava_level = 0.5200000247
+shader_parameter/noise_amount = 0.090000004275
 shader_parameter/noise_scale = 6.0
 shader_parameter/color_lava = Color(0.6, 0.1, 0.1, 1)
 shader_parameter/color_rock = Color(0.1, 0.1, 0.1, 1)
@@ -25,13 +26,12 @@ shader_parameter/snow_line = 0.6
 [node name="Main" type="Node3D"]
 
 [node name="MainCamera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.9921147, -0.12533323, 0, 0.12533323, 0.9921147, 0, 0, 22)
+transform = Transform3D(1, 0, 0, 0, 0.91283417, 0.40833047, 0, -0.40833047, 0.91283417, 0, 15, 20)
 keep_aspect = 0
 
 [node name="VolcanoMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45356393, 0.3270502, 0.30256557)
 mesh = SubResource("PlaneMesh_7dm0k")
 surface_material_override/0 = SubResource("ShaderMaterial_ig7tw")
 
 [node name="SunLight" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, -11.02585, 20, 0)
+transform = Transform3D(0.8660253, -0.43301272, 0.24999997, 0, 0.49999997, 0.8660254, -0.49999997, -0.75, 0.43301263, 0, 25, 0)
