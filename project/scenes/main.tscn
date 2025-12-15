@@ -1,7 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://cqow47bch5ocs"]
+[gd_scene load_steps=11 format=3 uid="uid://cqow47bch5ocs"]
 
 [ext_resource type="Shader" uid="uid://ce7nvvl0dgncv" path="res://shaders/volcano.gdshader" id="1_o5qli"]
 [ext_resource type="Shader" uid="uid://du6jheh3otwtd" path="res://shaders/lava_pool.gdshader" id="2_0wfyh"]
+[ext_resource type="Texture2D" uid="uid://2771b32udsh5" path="res://materials/rocks_normal.png" id="2_tbgi4"]
+[ext_resource type="Texture2D" uid="uid://ncs0asdg5rgu" path="res://materials/waves.png" id="3_sugp2"]
+[ext_resource type="Texture2D" uid="uid://bkx8atsgkwm55" path="res://materials/snows_normal.png" id="3_tefeu"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
 size = Vector2(35, 35)
@@ -21,9 +24,19 @@ shader_parameter/noise_amount = 0.090000004275
 shader_parameter/noise_scale = 6.0
 shader_parameter/color_lava_cool = Color(0.25, 0.04, 0.03, 1)
 shader_parameter/color_lava_hot = Color(1.2, 0.35, 0.06, 1)
-shader_parameter/color_rock = Color(0.1, 0.1, 0.1, 1)
+shader_parameter/color_rock = Color(0.31640396, 0.25554222, 0.16099113, 1)
 shader_parameter/color_snow = Color(0.9, 0.9, 0.9, 1)
-shader_parameter/snow_line = 0.6
+shader_parameter/snow_line = 0.570000027075
+shader_parameter/ambient_color = Color(0.02, 0.02, 0.02, 1)
+shader_parameter/ambient_strength = 0.15
+shader_parameter/specular_color = Color(1, 1, 1, 1)
+shader_parameter/specular_strength = 0.010000000475
+shader_parameter/shininess = 128.00000608
+shader_parameter/use_normal_mapping = true
+shader_parameter/rocks_normal = ExtResource("2_tbgi4")
+shader_parameter/snows_normal = ExtResource("3_tefeu")
+shader_parameter/normal_strength = 0.238000011305
+shader_parameter/normal_uv_scale = 20.91100099001262
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_sugp2"]
 top_radius = 3.0
@@ -33,37 +46,48 @@ height = 0.05
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jyhfs"]
 render_priority = 0
 shader = ExtResource("2_0wfyh")
-shader_parameter/pool_radius = 3.000000095
+shader_parameter/pool_radius = 2.74000008265
 shader_parameter/edge_softness = 0.618000029355
 shader_parameter/noise_scale = 1.61800007359512
-shader_parameter/flow_speed = 0.350000016625
-shader_parameter/distortion_level = 0.050000002375
+shader_parameter/flow_speed = 0.2000000095
+shader_parameter/distortion_level = 0.05
 shader_parameter/color_lava_cool = Color(0.25, 0.04, 0.03, 1)
 shader_parameter/color_lava_hot = Color(1.2, 0.35, 0.06, 1)
 shader_parameter/emission_energy = 6.0
-shader_parameter/texture_scale = 1.0
+shader_parameter/ambient_color = Color(0.02, 0.02, 0.02, 1)
+shader_parameter/ambient_strength = 0.15
+shader_parameter/specular_color = Color(1.2, 0.35, 0.06, 1)
+shader_parameter/specular_strength = 1.2
+shader_parameter/shininess = 1.0
+shader_parameter/use_normal_mapping = true
+shader_parameter/texture_normal = ExtResource("3_sugp2")
+shader_parameter/normal_strength = 0.618
+shader_parameter/normal_uv_scale = 0.1
+shader_parameter/normal_scroll_0 = Vector2(0.02, 0.015)
+shader_parameter/normal_scroll_1 = Vector2(0.01, -0.015)
 
-[sub_resource type="Environment" id="Environment_o5qli"]
+[sub_resource type="Environment" id="Environment_tbgi4"]
 
 [node name="Main" type="Node3D"]
 
+[node name="SunLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.9751032, 0.2032091, -0.08876857, 0.11069422, -0.7929154, -0.59919274, -0.19214742, 0.57444865, -0.7956684, 0, 30.950716, 0.25480175)
+
 [node name="MainCamera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.64944804, 0.76040596, 0, -0.76040596, 0.64944804, 0, 40, 30)
+transform = Transform3D(0.7710779, -0.42728296, 0.47208926, -0.06585442, 0.6839243, 0.7265747, -0.6333263, -0.5913348, 0.4992204, 5.1519575, 26.854721, 17)
 keep_aspect = 0
+fov = 90.5
 
 [node name="VolcanoMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0374508, 11.971066, 0.81655025)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07280254, 0.026210785, 0.12777281)
 mesh = SubResource("PlaneMesh_7dm0k")
 surface_material_override/0 = SubResource("ShaderMaterial_ig7tw")
 
 [node name="LavaPoolMesh" type="MeshInstance3D" parent="VolcanoMesh"]
-transform = Transform3D(0.9997497, 0.009777657, 0.02012068, -0.009874099, 0.9999402, 0.004699116, -0.020073526, -0.004896628, 0.9997865, 0, 11.286695, 0)
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 1, 0.00063943863, 11.571563, -0.004685521)
 mesh = SubResource("CylinderMesh_sugp2")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("ShaderMaterial_jyhfs")
 
-[node name="SunLight" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-0.9802505, -0.17126516, 0.09887996, -1.4329179e-09, 0.4999999, 0.8660255, -0.19775996, 0.8489219, -0.49012515, 7.5752954, 27.616753, -25.532732)
-
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_o5qli")
+environment = SubResource("Environment_tbgi4")

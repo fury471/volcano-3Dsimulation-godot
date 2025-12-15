@@ -1,19 +1,20 @@
 shader_type spatial;
 //render_mode unshaded; // No lighting calculations (flat colors)
+render_mode cull_back;
 
 // --- Settings: Shape ---
 group_uniforms Shape_Settings;
-uniform float volcano_height: hint_range(1.0, 50.0) = 14.0;
-uniform float base_radius: hint_range(1.0, 50.0) = 11.0;
-uniform float crater_radius: hint_range(0.01, 1.0) = 0.15;
-uniform float crater_depth: hint_range(0.0, 5.0)  = 0.25;
-uniform float slope_steepness: hint_range(1.0, 5.0)  = 2.0; // Controls the curve of the cone
-uniform float lava_level: hint_range(0.0, 1.0)  = 0.6;
+uniform float volcano_height: hint_range(1.0, 50.0) = 22.0;
+uniform float base_radius: hint_range(1.0, 50.0) = 14.177;
+uniform float crater_radius: hint_range(0.01, 1.0) = 0.268;
+uniform float crater_depth: hint_range(0.0, 5.0)  = 0.654;
+uniform float slope_steepness: hint_range(1.0, 5.0)  = 1.587; // Controls the curve of the cone
+uniform float lava_level: hint_range(0.0, 1.0)  = 0.52;
 
 // --- Settings: Noise (Detail) ---
 group_uniforms Noise_Settings;
-uniform float noise_amount   : hint_range(0.0, 2.0)  = 0.2;
-uniform float noise_scale    : hint_range(1.0, 20.0) = 6.0;
+uniform float noise_amount: hint_range(0.0, 2.0)  = 0.2;
+uniform float noise_scale: hint_range(1.0, 20.0) = 6.0;
 
 // --- Settings: Colors ---
 group_uniforms Color_Settings;
@@ -22,6 +23,22 @@ uniform vec3 color_lava_hot: source_color = vec3(1.2, 0.35, 0.06);  // Magma
 uniform vec3 color_rock: source_color = vec3(0.1, 0.1, 0.1);
 uniform vec3 color_snow: source_color = vec3(0.9, 0.9, 0.9);
 uniform float snow_line: hint_range(0.0, 1.0) = 0.6; // Height % where snow starts
+
+// --- Settings: Phong Shading ---
+group_uniforms Phong_Settings;
+uniform vec3 ambient_color: source_color = vec3(0.02, 0.02, 0.02);
+uniform float ambient_strength: hint_range(0.0, 1.0) = 0.15;
+uniform vec3 specular_color: source_color = vec3(1.0);
+uniform float specular_strength : hint_range(0.0, 4.0) = 1.0;
+uniform float shininess: hint_range(0.0, 256.0) = 1.0;
+
+// --- Settings: Normal Mapping ---
+group_uniforms NormalMapping_Settings;
+uniform bool use_normal_mapping = true;
+uniform sampler2D rocks_normal: hint_normal;
+uniform sampler2D snows_normal: hint_normal;
+uniform float normal_strength: hint_range(0.0, 2.0) = 0.618;
+uniform float normal_uv_scale: hint_range(0.1, 200.0) = 4.0;
 
 // --- Varyings ---
 // Used to pass data from Vertex -> Fragment shader
@@ -35,7 +52,7 @@ float random(float n) {
 	return fract(sin(n) * 43758.5453123);
 }
 
-// 2D Value Noise
+// 2D value noise
 float value_noise(vec2 uv) {
 	vec2 i = floor(uv);
 	vec2 f = fract(uv);
@@ -92,7 +109,7 @@ float calculate_volcano_height(vec2 pos_normalized) {
 	return final_shape * volcano_height;
 }
 
-// --- Normal Calculation ---
+// --- Normal calculation ---
 vec3 calculate_normal(vec3 pos_normalized) {
 	// Numerical approximation of normal using small offsets
 	float delta = 0.01;
@@ -100,7 +117,12 @@ vec3 calculate_normal(vec3 pos_normalized) {
 	float hx1 = calculate_volcano_height((pos_normalized.xz + vec2(delta, 0.0)));
 	float hz0 = calculate_volcano_height((pos_normalized.xz - vec2(0.0, delta)));
 	float hz1 = calculate_volcano_height((pos_normalized.xz + vec2(0.0, delta)));
-	vec3 local_normal = normalize(vec3(hx1 - hx0, 2.0 * delta, hz1 - hz0));
+	vec3 dx = vec3(1.0, (hx1 - hx0)/(2.0 * delta), 0.0);
+	vec3 dz = vec3(0.0, (hz1 - hz0)/(2.0 * delta), 1.0);
+	vec3 local_normal = normalize(cross(dz, dx));
+	if (local_normal.y < 0.0) {
+		local_normal = -local_normal;
+	}
 
 	return local_normal;
 }
@@ -131,6 +153,14 @@ float lava_flow_veins(vec2 pos_normalized){
     return veins;
 }
 
+// --- Calculate Tangent, Binormal, Normal ---
+void calculate_tbn(vec3 normal, out vec3 tangent, out vec3 binormal) {
+	vec3 up = abs(normal.y) < 0.99 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
+	// gram-schmidt orthogonalization
+	tangent = normalize(up - normal * dot(up, normal));
+	binormal = normalize(cross(normal, tangent));
+}
+
 void vertex() {
 	v_local_position = VERTEX;
 	// Calculate and set normal
@@ -147,20 +177,27 @@ void vertex() {
 
 	// Pass the normalized height (0.0 to 1.0) to the fragment shader
 	// We use clamp to ensure colors don't glitch if noise pushes it slightly out of bounds
-	v_local_height_normalized = clamp(h / volcano_height, 0.0, 1.0);
+	v_local_height_normalized = clamp(h/volcano_height, 0.0, 1.0);
 
+	// Compute normal, binormal and tangent
+	vec3 local_t, local_b;
+	calculate_tbn(v_local_normal, local_t, local_b);
+	TANGENT = local_t;
+	BINORMAL = local_b;
 }
 
 void fragment() {
 	// Base Gradient: Mix Rock and Snow based on height
-	vec3 base_color = mix(color_rock, color_snow, smoothstep(snow_line - 0.1, snow_line + 0.1, v_local_height_normalized));
+	float snow_blend_factor = smoothstep(snow_line - 0.1, snow_line + 0.1, v_local_height_normalized);
+	vec2 pos_normalized = v_local_position.xz / base_radius;
+	vec3 base_color = mix(color_rock, color_snow, snow_blend_factor);
 
 	// Lava Mask: inside crater and below lava level
-	float lava_mask = calculate_lava_mask(v_local_position.xz / base_radius, v_local_height_normalized);
+	float lava_mask = calculate_lava_mask(pos_normalized, v_local_height_normalized);
 
 	// Faking Lava flow (animated)
 	// Color variation: darker crust + brighter hot veins
-	float veins = lava_flow_veins(v_local_position.xz / base_radius);
+	float veins = lava_flow_veins(pos_normalized);
 	vec3 lava_color = mix(color_lava_cool, color_lava_hot, veins);
 
 	vec3 final_color = mix(base_color, lava_color, lava_mask);
@@ -168,10 +205,46 @@ void fragment() {
 	ALBEDO = final_color;
 	EMISSION = lava_color * lava_mask * veins * 6.18;
 
+	// Planar uv from local xz
+	vec2 uv = pos_normalized * normal_uv_scale;
+	vec2 offset_uv = uv + 0.1 * vec2(value_noise(uv), value_noise(uv));
+	// --- Normal Mapping ---
+	if (use_normal_mapping) {
+		vec3 n_rock = texture(rocks_normal, uv).xyz * 2.0 - 1.0;
+		vec3 n_rock_offset = texture(rocks_normal, offset_uv).xyz * 2.0 - 1.0;
+		vec3 n_snow = texture(snows_normal, uv).xyz * 2.0 - 1.0;
+		vec3 n_snow_offset = texture(snows_normal, offset_uv).xyz * 2.0 - 1.0;
+		n_rock = mix(n_rock, n_rock_offset, value_noise(uv));
+		n_snow = mix(n_snow, n_snow_offset, value_noise(uv));
+		// Blend normals in tangent space, then normalize
+		vec3 n = normalize(mix(n_rock, n_snow, snow_blend_factor));
+		// Blend toward flat normal(0, 0, 1)
+		n = normalize(mix(vec3(0.0, 0.0, 1.0), n, normal_strength));
+
+		NORMAL_MAP = n;
+	}
+
+	// --- Phong Shading ---
+	EMISSION += ambient_color * ambient_strength;
 }
 
 
-//void light() {
-//	// Called for every pixel for every light affecting the material.
-//	// Uncomment to replace the default light processing function with this one.
-//}
+void light() {
+    vec3 N = normalize(NORMAL);
+    vec3 L = normalize(LIGHT);
+    vec3 V = normalize(VIEW);
+
+    // Diffuse
+    float NdotL = max(dot(N, L), 0.0);
+    vec3 diffuse = ALBEDO * NdotL;
+
+    // Specular
+    vec3 R = reflect(-L, N);
+    float RdotV = max(dot(R, V), 0.0);
+    float spec_factor = pow(RdotV, shininess) * specular_strength * 0.1;
+
+    DIFFUSE_LIGHT += diffuse * LIGHT_COLOR * ATTENUATION;
+    SPECULAR_LIGHT += specular_color * spec_factor * LIGHT_COLOR * ATTENUATION;
+
+	
+}
