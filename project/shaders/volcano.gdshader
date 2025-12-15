@@ -3,12 +3,12 @@ shader_type spatial;
 
 // --- Settings: Shape ---
 group_uniforms Shape_Settings;
-uniform float volcano_height : hint_range(1.0, 50.0) = 14.0;
-uniform float base_radius    : hint_range(1.0, 50.0) = 11.0;
-uniform float crater_radius  : hint_range(0.01, 1.0) = 0.15;
-uniform float crater_depth   : hint_range(0.0, 5.0)  = 0.25;
+uniform float volcano_height: hint_range(1.0, 50.0) = 14.0;
+uniform float base_radius: hint_range(1.0, 50.0) = 11.0;
+uniform float crater_radius: hint_range(0.01, 1.0) = 0.15;
+uniform float crater_depth: hint_range(0.0, 5.0)  = 0.25;
 uniform float slope_steepness: hint_range(1.0, 5.0)  = 2.0; // Controls the curve of the cone
-uniform float lava_level     : hint_range(0.0, 1.0)  = 0.6;
+uniform float lava_level: hint_range(0.0, 1.0)  = 0.6;
 
 // --- Settings: Noise (Detail) ---
 group_uniforms Noise_Settings;
@@ -17,10 +17,11 @@ uniform float noise_scale    : hint_range(1.0, 20.0) = 6.0;
 
 // --- Settings: Colors ---
 group_uniforms Color_Settings;
-uniform vec3 color_lava : source_color = vec3(0.6, 0.1, 0.1);
-uniform vec3 color_rock : source_color = vec3(0.1, 0.1, 0.1);
-uniform vec3 color_snow : source_color = vec3(0.9, 0.9, 0.9);
-uniform float snow_line : hint_range(0.0, 1.0) = 0.6; // Height % where snow starts
+uniform vec3 color_lava_cool: source_color = vec3(0.25, 0.04, 0.03); // Crust
+uniform vec3 color_lava_hot: source_color = vec3(1.2, 0.35, 0.06);  // Magma
+uniform vec3 color_rock: source_color = vec3(0.1, 0.1, 0.1);
+uniform vec3 color_snow: source_color = vec3(0.9, 0.9, 0.9);
+uniform float snow_line: hint_range(0.0, 1.0) = 0.6; // Height % where snow starts
 
 // --- Varyings ---
 // Used to pass data from Vertex -> Fragment shader
@@ -113,12 +114,19 @@ float calculate_lava_mask(vec2 pos_normalized, float height_normalized) {
 	return crater_mask * below_level;
 }
 
-// --- Faking lava flow veins ---
+// --- Faking Lava flow veins ---
 float lava_flow_veins(vec2 pos_normalized){
-	vec2 uv = pos_normalized * 27.0; // scale controls vein size
-    uv += vec2(TIME * 0.35, TIME * 0.35);
-    float noise = fbm(uv);
-    float veins = smoothstep(0.2, 0.8, noise); // 0..1, bright streaks
+	float lava_noise_scale = 1.618;
+	float distortion_level = 0.01;
+	float flow_speed = 0.05;
+
+	vec2 uv = pos_normalized * lava_noise_scale;
+    uv += vec2(TIME * flow_speed, TIME * flow_speed);
+    float warp_noise = fbm(uv);
+	uv += (warp_noise * 2.0 - 1.0) * distortion_level;
+	uv += vec2(TIME * flow_speed, 0.0);
+	float final_noise = fbm(uv * 6.18);
+    float veins = smoothstep(0.2, 0.8, final_noise); // 0..1, bright streaks
 
     return veins;
 }
@@ -152,15 +160,13 @@ void fragment() {
 
 	// Faking Lava flow (animated)
 	// Color variation: darker crust + brighter hot veins
-    vec3 lava_cool = color_lava * 0.4;
-    vec3 lava_hot  = color_lava * 1.5;
 	float veins = lava_flow_veins(v_local_position.xz / base_radius);
-	vec3 lava_color = mix(lava_cool, lava_hot, veins);
+	vec3 lava_color = mix(color_lava_cool, color_lava_hot, veins);
 
 	vec3 final_color = mix(base_color, lava_color, lava_mask);
 
 	ALBEDO = final_color;
-	EMISSION = lava_color * lava_mask * (2.0 + 6.0 * veins);
+	EMISSION = lava_color * lava_mask * veins * 6.18;
 
 }
 
