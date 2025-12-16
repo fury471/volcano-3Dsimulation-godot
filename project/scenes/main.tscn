@@ -1,17 +1,17 @@
-[gd_scene load_steps=21 format=3 uid="uid://cqow47bch5ocs"]
+[gd_scene load_steps=30 format=3 uid="uid://cqow47bch5ocs"]
 
 [ext_resource type="Script" uid="uid://csgl2aa0xda6a" path="res://scripts/eruption_controller.gd" id="1_85g3d"]
 [ext_resource type="Shader" uid="uid://ce7nvvl0dgncv" path="res://shaders/volcano.gdshader" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://d13ippknld2ce" path="res://scripts/smoke_emitter.gd" id="1_tefeu"]
 [ext_resource type="Shader" uid="uid://du6jheh3otwtd" path="res://shaders/lava_pool.gdshader" id="2_0wfyh"]
-[ext_resource type="Shader" uid="uid://bqu76i0ru63xc" path="res://shaders/smoke.gdshader" id="2_o6xl0"]
+[ext_resource type="Shader" uid="uid://bqu76i0ru63xc" path="res://shaders/smoke_particle.gdshader" id="2_o6xl0"]
 [ext_resource type="Texture2D" uid="uid://2771b32udsh5" path="res://materials/rocks_normal.png" id="2_tbgi4"]
 [ext_resource type="Texture2D" uid="uid://ncs0asdg5rgu" path="res://materials/waves.png" id="3_sugp2"]
 [ext_resource type="Texture2D" uid="uid://bkx8atsgkwm55" path="res://materials/snows_normal.png" id="3_tefeu"]
-[ext_resource type="Shader" uid="uid://bjn8sgqtcj3i1" path="res://scenes/lava.gdshader" id="6_o6xl0"]
-[ext_resource type="Shader" uid="uid://bvr5w2ohutfr" path="res://scenes/flame.gdshader" id="6_tipki"]
-[ext_resource type="Shader" uid="uid://byu4lupcrp77j" path="res://scenes/smoke.gdshader" id="7_tipki"]
 [ext_resource type="Script" uid="uid://bxmky2a57522x" path="res://scripts/lava_chunks_emitter.gd" id="3_tipki"]
+[ext_resource type="Shader" uid="uid://bjn8sgqtcj3i1" path="res://shaders/lava.gdshader" id="6_o6xl0"]
+[ext_resource type="Shader" uid="uid://bvr5w2ohutfr" path="res://shaders/flame.gdshader" id="6_tipki"]
+[ext_resource type="Shader" uid="uid://byu4lupcrp77j" path="res://shaders/smoke.gdshader" id="7_tipki"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tefeu"]
 render_priority = 0
@@ -303,14 +303,14 @@ mesh = SubResource("QuadMesh_ya4ey")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
 
-[node name="smoke6" type="MeshInstance3D" parent="smoke"]
-transform = Transform3D(0.50000006, -9.835063e-08, 0.021650635, -1.926374e-08, 1, 8.388657e-10, -34.641014, -6.7756923e-06, 0.50000006, 0, 0, 0)
+[node name="smoke5" type="MeshInstance3D" parent="smoke"]
+transform = Transform3D(0.8660254, -1.7034827e-07, 0.0125, 5.299942e-09, 1, 1.4529575e-09, -20.000002, -9.6556e-06, 0.8660253, 0, 0, 0)
 mesh = SubResource("QuadMesh_ya4ey")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
 
-[node name="smoke5" type="MeshInstance3D" parent="smoke"]
-transform = Transform3D(0.8660254, -1.7034829e-07, 0.012500002, 5.299942e-09, 1, 1.4529578e-09, -20.000002, -9.655598e-06, 0.8660254, 0, 0, 0)
+[node name="smoke6" type="MeshInstance3D" parent="smoke"]
+transform = Transform3D(0.50000006, -9.835063e-08, 0.021650635, -1.926374e-08, 1, 8.388657e-10, -34.641014, -6.7756923e-06, 0.50000006, 0, 0, 0)
 mesh = SubResource("QuadMesh_ya4ey")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
