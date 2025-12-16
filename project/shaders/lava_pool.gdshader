@@ -140,7 +140,7 @@ void vertex() {
 	vec2 sum_gradxz = w1.gradxz + w2.gradxz;
 	vec3 local_n = normalize(vec3(-sum_gradxz.x, 1, -sum_gradxz.y));
 	vec3 local_t = normalize(vec3(1, sum_gradxz.x, 0));
-	vec3 local_b = normalize(cross(local_n, local_t));
+	vec3 local_b = normalize(vec3(0, sum_gradxz.y, 1));
 	
 	TANGENT = local_t;
 	BINORMAL = local_b;

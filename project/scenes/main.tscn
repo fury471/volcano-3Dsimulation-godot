@@ -30,13 +30,13 @@ shader_parameter/snow_line = 0.570000027075
 shader_parameter/ambient_color = Color(0.02, 0.02, 0.02, 1)
 shader_parameter/ambient_strength = 0.15
 shader_parameter/specular_color = Color(1, 1, 1, 1)
-shader_parameter/specular_strength = 0.010000000475
-shader_parameter/shininess = 128.00000608
+shader_parameter/specular_strength = 0.0150000007125
+shader_parameter/shininess = 1.0
 shader_parameter/use_normal_mapping = true
 shader_parameter/rocks_normal = ExtResource("2_tbgi4")
 shader_parameter/snows_normal = ExtResource("3_tefeu")
-shader_parameter/normal_strength = 0.238000011305
-shader_parameter/normal_uv_scale = 20.91100099001262
+shader_parameter/normal_strength = 0.158000007505
+shader_parameter/normal_uv_scale = 4.0
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_sugp2"]
 top_radius = 3.0
@@ -70,9 +70,6 @@ shader_parameter/normal_scroll_1 = Vector2(0.01, -0.015)
 
 [node name="Main" type="Node3D"]
 
-[node name="SunLight" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.9751032, 0.2032091, -0.08876857, 0.11069422, -0.7929154, -0.59919274, -0.19214742, 0.57444865, -0.7956684, 0, 30.950716, 0.25480175)
-
 [node name="MainCamera" type="Camera3D" parent="."]
 transform = Transform3D(0.7710779, -0.42728296, 0.47208926, -0.06585442, 0.6839243, 0.7265747, -0.6333263, -0.5913348, 0.4992204, 5.1519575, 26.854721, 17)
 keep_aspect = 0
@@ -84,10 +81,19 @@ mesh = SubResource("PlaneMesh_7dm0k")
 surface_material_override/0 = SubResource("ShaderMaterial_ig7tw")
 
 [node name="LavaPoolMesh" type="MeshInstance3D" parent="VolcanoMesh"]
-transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 1, 0.00063943863, 11.571563, -0.004685521)
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.4, 0)
 mesh = SubResource("CylinderMesh_sugp2")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("ShaderMaterial_jyhfs")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_tbgi4")
+
+[node name="Sunlight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.3293593, -0.77395785, 0.5408438, 0.17504978, 0.61292493, 0.770507, -0.92783624, -0.15909906, 0.33735362, 0, 24.544146, 0)
+shadow_enabled = true
+shadow_blur = 2.0
+directional_shadow_split_1 = 0.2
+directional_shadow_split_2 = 0.4
+directional_shadow_split_3 = 0.8
+directional_shadow_blend_splits = true

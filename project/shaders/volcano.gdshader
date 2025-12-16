@@ -109,22 +109,34 @@ float calculate_volcano_height(vec2 pos_normalized) {
 	return final_shape * volcano_height;
 }
 
-// --- Normal calculation ---
-vec3 calculate_normal(vec3 pos_normalized) {
+struct tanSpace {
+	vec3 tangent;
+	vec3 binormal;
+	vec3 normal;
+};
+
+// --- TBN calculation ---
+tanSpace calculate_tangent_space(vec2 pos_normalized) {
 	// Numerical approximation of normal using small offsets
 	float delta = 0.01;
-	float hx0 = calculate_volcano_height((pos_normalized.xz - vec2(delta, 0.0)));
-	float hx1 = calculate_volcano_height((pos_normalized.xz + vec2(delta, 0.0)));
-	float hz0 = calculate_volcano_height((pos_normalized.xz - vec2(0.0, delta)));
-	float hz1 = calculate_volcano_height((pos_normalized.xz + vec2(0.0, delta)));
+	float hx0 = calculate_volcano_height((pos_normalized - vec2(delta, 0.0)));
+	float hx1 = calculate_volcano_height((pos_normalized + vec2(delta, 0.0)));
+	float hz0 = calculate_volcano_height((pos_normalized - vec2(0.0, delta)));
+	float hz1 = calculate_volcano_height((pos_normalized + vec2(0.0, delta)));
 	vec3 dx = vec3(1.0, (hx1 - hx0)/(2.0 * delta), 0.0);
 	vec3 dz = vec3(0.0, (hz1 - hz0)/(2.0 * delta), 1.0);
 	vec3 local_normal = normalize(cross(dz, dx));
 	if (local_normal.y < 0.0) {
 		local_normal = -local_normal;
 	}
+	vec3 local_tangent = normalize(dx - local_normal * dot(local_normal, dx));
+	vec3 local_binormal = normalize(cross(local_normal, local_tangent));
+	tanSpace local_space;
+	local_space.normal = local_normal;
+	local_space.tangent = local_tangent;
+	local_space.binormal = local_binormal;
 
-	return local_normal;
+	return local_space;
 }
 
 // --- Lava mask calculation ---
@@ -153,22 +165,13 @@ float lava_flow_veins(vec2 pos_normalized){
     return veins;
 }
 
-// --- Calculate Tangent, Binormal, Normal ---
-void calculate_tbn(vec3 normal, out vec3 tangent, out vec3 binormal) {
-	vec3 up = abs(normal.y) < 0.99 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
-	// gram-schmidt orthogonalization
-	tangent = normalize(up - normal * dot(up, normal));
-	binormal = normalize(cross(normal, tangent));
-}
-
 void vertex() {
 	v_local_position = VERTEX;
-	// Calculate and set normal
-	v_local_normal = calculate_normal(v_local_position / base_radius);
-	NORMAL = v_local_normal;
-
 	// Normalize world coordinates to roughly [-1, 1] range based on base_radius
 	vec2 pos_xz_normalized = VERTEX.xz / base_radius;
+	// Calculate and set normal
+	tanSpace local_space = calculate_tangent_space(pos_xz_normalized);
+	NORMAL = local_space.normal;
 
 	// Calculate and apply height
 	float h = calculate_volcano_height(pos_xz_normalized);
@@ -179,11 +182,8 @@ void vertex() {
 	// We use clamp to ensure colors don't glitch if noise pushes it slightly out of bounds
 	v_local_height_normalized = clamp(h/volcano_height, 0.0, 1.0);
 
-	// Compute normal, binormal and tangent
-	vec3 local_t, local_b;
-	calculate_tbn(v_local_normal, local_t, local_b);
-	TANGENT = local_t;
-	BINORMAL = local_b;
+	TANGENT = local_space.tangent;
+	BINORMAL = local_space.binormal;
 }
 
 void fragment() {
