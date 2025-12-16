@@ -1,0 +1,121 @@
+[gd_scene load_steps=16 format=3 uid="uid://cqow47bch5ocs"]
+
+[ext_resource type="Shader" uid="uid://ce7nvvl0dgncv" path="res://shaders/volcano.gdshader" id="1_o5qli"]
+[ext_resource type="Script" uid="uid://d13ippknld2ce" path="res://scripts/eruption.gd" id="1_tefeu"]
+[ext_resource type="Shader" uid="uid://du6jheh3otwtd" path="res://shaders/lava_pool.gdshader" id="2_0wfyh"]
+[ext_resource type="Shader" uid="uid://bqu76i0ru63xc" path="res://shaders/smoke.gdshader" id="2_o6xl0"]
+[ext_resource type="Texture2D" uid="uid://2771b32udsh5" path="res://materials/rocks_normal.png" id="2_tbgi4"]
+[ext_resource type="Texture2D" uid="uid://ncs0asdg5rgu" path="res://materials/waves.png" id="3_sugp2"]
+[ext_resource type="Texture2D" uid="uid://bkx8atsgkwm55" path="res://materials/snows_normal.png" id="3_tefeu"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tipki"]
+render_priority = 0
+shader = ExtResource("2_o6xl0")
+
+[sub_resource type="QuadMesh" id="QuadMesh_tefeu"]
+
+[sub_resource type="MultiMesh" id="MultiMesh_tefeu"]
+instance_count = 5
+mesh = SubResource("QuadMesh_tefeu")
+buffer = PackedFloat32Array(0, 2.5e-44, 1e-45, 0, 2.7e-44, 2.5e-44, 1e-45, 2.4e-44, 3e-45, 1e-45, 2.5e-44, 2.4e-44, 3e-45, 2.2e-44, 4e-45, 3e-45, 2.4e-44, 2.2e-44, 4e-45, 2.1e-44, 6e-45, 4e-45, 2.2e-44, 2.1e-44, 6e-45, 2e-44, 7e-45, 6e-45, 2.1e-44, 2e-44, 7e-45, 1.8e-44, 8e-45, 7e-45, 2e-44, 1.8e-44, 8e-45, 1.7e-44, 1e-44, 8e-45)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
+size = Vector2(35, 35)
+subdivide_width = 200
+subdivide_depth = 200
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ig7tw"]
+render_priority = 0
+shader = ExtResource("1_o5qli")
+shader_parameter/volcano_height = 22.0000009975
+shader_parameter/base_radius = 14.1770006259075
+shader_parameter/crater_radius = 0.26800001203148005
+shader_parameter/crater_depth = 0.654000031065
+shader_parameter/slope_steepness = 1.5870000278825
+shader_parameter/lava_level = 0.5200000247
+shader_parameter/noise_amount = 0.090000004275
+shader_parameter/noise_scale = 6.0
+shader_parameter/color_lava_cool = Color(0.25, 0.04, 0.03, 1)
+shader_parameter/color_lava_hot = Color(1.2, 0.35, 0.06, 1)
+shader_parameter/color_rock = Color(0.31640396, 0.25554222, 0.16099113, 1)
+shader_parameter/color_snow = Color(0.9, 0.9, 0.9, 1)
+shader_parameter/snow_line = 0.570000027075
+shader_parameter/ambient_color = Color(0.02, 0.02, 0.02, 1)
+shader_parameter/ambient_strength = 0.15
+shader_parameter/specular_color = Color(1, 1, 1, 1)
+shader_parameter/specular_strength = 0.0150000007125
+shader_parameter/shininess = 1.0
+shader_parameter/use_normal_mapping = true
+shader_parameter/rocks_normal = ExtResource("2_tbgi4")
+shader_parameter/snows_normal = ExtResource("3_tefeu")
+shader_parameter/normal_strength = 0.158000007505
+shader_parameter/normal_uv_scale = 4.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_sugp2"]
+top_radius = 3.0
+bottom_radius = 3.0
+height = 0.05
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jyhfs"]
+render_priority = 0
+shader = ExtResource("2_0wfyh")
+shader_parameter/pool_radius = 2.74000008265
+shader_parameter/edge_softness = 0.618000029355
+shader_parameter/noise_scale = 1.61800007359512
+shader_parameter/flow_speed = 0.2000000095
+shader_parameter/distortion_level = 0.05
+shader_parameter/color_lava_cool = Color(0.25, 0.04, 0.03, 1)
+shader_parameter/color_lava_hot = Color(1.2, 0.35, 0.06, 1)
+shader_parameter/emission_energy = 6.0
+shader_parameter/ambient_color = Color(0.02, 0.02, 0.02, 1)
+shader_parameter/ambient_strength = 0.15
+shader_parameter/specular_color = Color(1.2, 0.35, 0.06, 1)
+shader_parameter/specular_strength = 1.2
+shader_parameter/shininess = 1.0
+shader_parameter/use_normal_mapping = true
+shader_parameter/texture_normal = ExtResource("3_sugp2")
+shader_parameter/normal_strength = 0.618
+shader_parameter/normal_uv_scale = 0.1
+shader_parameter/normal_scroll_0 = Vector2(0.02, 0.015)
+shader_parameter/normal_scroll_1 = Vector2(0.01, -0.015)
+
+[sub_resource type="Environment" id="Environment_tbgi4"]
+
+[node name="Main" type="Node3D"]
+
+[node name="MainCamera" type="Camera3D" parent="."]
+transform = Transform3D(0.7710778, -0.42728293, 0.47208923, -0.0631678, 0.6864261, 0.7244509, -0.6335998, -0.58842885, 0.50229746, 5.1519575, 26.854721, 17)
+keep_aspect = 0
+fov = 90.5
+
+[node name="EruptionSmokeSystem" type="Node3D" parent="."]
+script = ExtResource("1_tefeu")
+
+[node name="EruptionMMI" type="MultiMeshInstance3D" parent="EruptionSmokeSystem"]
+material_override = SubResource("ShaderMaterial_tipki")
+lod_bias = 0.001
+multimesh = SubResource("MultiMesh_tefeu")
+
+[node name="VolcanoMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07280254, 0.026210785, 0.12777281)
+visible = false
+mesh = SubResource("PlaneMesh_7dm0k")
+surface_material_override/0 = SubResource("ShaderMaterial_ig7tw")
+
+[node name="LavaPoolMesh" type="MeshInstance3D" parent="VolcanoMesh"]
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.4, 0)
+mesh = SubResource("CylinderMesh_sugp2")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("ShaderMaterial_jyhfs")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_tbgi4")
+
+[node name="Sunlight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.3293593, -0.77395785, 0.5408438, 0.17504978, 0.61292493, 0.770507, -0.92783624, -0.15909906, 0.33735362, 0, 24.544146, 0)
+shadow_enabled = true
+shadow_blur = 2.0
+directional_shadow_split_1 = 0.2
+directional_shadow_split_2 = 0.4
+directional_shadow_split_3 = 0.8
+directional_shadow_blend_splits = true
