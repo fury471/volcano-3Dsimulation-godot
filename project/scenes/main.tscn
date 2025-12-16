@@ -8,6 +8,9 @@
 [ext_resource type="Texture2D" uid="uid://2771b32udsh5" path="res://materials/rocks_normal.png" id="2_tbgi4"]
 [ext_resource type="Texture2D" uid="uid://ncs0asdg5rgu" path="res://materials/waves.png" id="3_sugp2"]
 [ext_resource type="Texture2D" uid="uid://bkx8atsgkwm55" path="res://materials/snows_normal.png" id="3_tefeu"]
+[ext_resource type="Shader" uid="uid://bjn8sgqtcj3i1" path="res://scenes/lava.gdshader" id="6_o6xl0"]
+[ext_resource type="Shader" uid="uid://bvr5w2ohutfr" path="res://scenes/flame.gdshader" id="6_tipki"]
+[ext_resource type="Shader" uid="uid://byu4lupcrp77j" path="res://scenes/smoke.gdshader" id="7_tipki"]
 [ext_resource type="Script" uid="uid://bxmky2a57522x" path="res://scripts/lava_chunks_emitter.gd" id="3_tipki"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tefeu"]
@@ -105,6 +108,48 @@ shader_parameter/normal_scroll_1 = Vector2(0.01, -0.015)
 
 [sub_resource type="Environment" id="Environment_tbgi4"]
 
+[sub_resource type="PlaneMesh" id="PlaneMesh_85g3d"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ya4ey"]
+render_priority = 0
+shader = ExtResource("6_tipki")
+shader_parameter/use_emission = false
+shader_parameter/intensity = 9.402000446595
+shader_parameter/core_tightness = 5.914000257165
+shader_parameter/base_falloff = 2.0690000745275
+shader_parameter/noise_scale = 15.8970007076075
+shader_parameter/noise_speed = 4.0
+shader_parameter/col_core = Vector3(1, 0.55, 0.2)
+shader_parameter/col_red = Vector3(0.95, 0.12, 0.05)
+shader_parameter/col_dark = Vector3(0.2, 0.02, 0.02)
+
+[sub_resource type="QuadMesh" id="QuadMesh_85g3d"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_choun"]
+render_priority = 0
+shader = ExtResource("6_o6xl0")
+shader_parameter/intensity = 8.0
+shader_parameter/lava_count_f = 24.0
+shader_parameter/cycle = 3.0
+shader_parameter/gravity = 0.6
+shader_parameter/speed_y = 1.0
+shader_parameter/speed_x = 1.0
+shader_parameter/sim_scale = 0.35
+shader_parameter/hot_color = Vector3(1, 0.45, 0.08)
+shader_parameter/cool_color = Vector3(0.25, 0.05, 0.02)
+
+[sub_resource type="QuadMesh" id="QuadMesh_ya4ey"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_eb6dy"]
+render_priority = 0
+shader = ExtResource("7_tipki")
+shader_parameter/intensity = 0.898
+shader_parameter/smoke_count = 75
+shader_parameter/smoke_color = Vector3(0.18, 0.18, 0.18)
+shader_parameter/star_color = Vector3(0.55, 0.22, 0.05)
+shader_parameter/top_fade_start = 0.65
+shader_parameter/top_fade_end = 0.98
+
 [node name="Main" type="Node3D"]
 
 [node name="MainCamera" type="Camera3D" parent="."]
@@ -180,3 +225,112 @@ directional_shadow_split_1 = 0.2
 directional_shadow_split_2 = 0.4
 directional_shadow_split_3 = 0.8
 directional_shadow_blend_splits = true
+
+[node name="flame" type="MeshInstance3D" parent="."]
+transform = Transform3D(8, 0, 0, 0, -2.1855694e-08, 30, 0, -0.5, -1.3113416e-06, 0, 33.871075, 0)
+mesh = SubResource("PlaneMesh_85g3d")
+skeleton = NodePath("../smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
+
+[node name="flame2" type="MeshInstance3D" parent="flame"]
+transform = Transform3D(0.8660254, -0.0625, -8.195885e-08, 4, 0.8660254, -1.7568652e-07, 5.8281855e-09, -1.9520718e-10, 1, 0, 0, 0)
+mesh = SubResource("PlaneMesh_85g3d")
+skeleton = NodePath("../../smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
+
+[node name="flame3" type="MeshInstance3D" parent="flame"]
+transform = Transform3D(0.49999997, -0.10825318, -1.419569e-07, 6.9282036, 0.49999997, -6.55671e-07, 1.00947135e-08, -7.2852324e-10, 1, 0, 0, 0)
+mesh = SubResource("PlaneMesh_85g3d")
+skeleton = NodePath("../../smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
+
+[node name="flame4" type="MeshInstance3D" parent="flame"]
+transform = Transform3D(-4.371139e-08, -0.125, -1.639177e-07, 8, -4.3711385e-08, -1.311342e-06, 1.1656372e-08, -1.4570466e-09, 1, 0, 0, 0)
+mesh = SubResource("PlaneMesh_85g3d")
+skeleton = NodePath("../../smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
+
+[node name="flame5" type="MeshInstance3D" parent="flame"]
+transform = Transform3D(-0.50000006, -0.10825317, -1.419569e-07, 6.928203, -0.50000006, -1.9670126e-06, 1.00947135e-08, -2.1855697e-09, 1, 0, 0, 0)
+mesh = SubResource("PlaneMesh_85g3d")
+skeleton = NodePath("../../smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
+
+[node name="flame6" type="MeshInstance3D" parent="flame"]
+transform = Transform3D(-0.8660254, -0.06250001, -8.195886e-08, 4.0000005, -0.8660254, -2.4469969e-06, 5.8281864e-09, -2.7188856e-09, 1, 0, 0, 0)
+mesh = SubResource("PlaneMesh_85g3d")
+skeleton = NodePath("../../smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
+
+[node name="lava" type="MeshInstance3D" parent="."]
+transform = Transform3D(30, 0, 0, 0, -25, 1.509958e-07, 0, -3.774895e-06, -1, 0.47670746, 22.36368, 0)
+mesh = SubResource("QuadMesh_85g3d")
+skeleton = NodePath("../smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_choun")
+
+[node name="lava2" type="MeshInstance3D" parent="lava"]
+transform = Transform3D(0.49999994, 6.309195e-08, -0.028867513, 1.5691944e-07, 1, 6.5168266e-09, 25.980762, -4.8676798e-06, 0.49999997, 0, 0, 0)
+mesh = SubResource("QuadMesh_85g3d")
+skeleton = NodePath("../../smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_choun")
+
+[node name="lava3" type="MeshInstance3D" parent="lava"]
+transform = Transform3D(-0.50000006, 6.309195e-08, -0.028867511, 1.5691944e-07, 1, 4.7699467e-10, 25.980762, -2.6821103e-06, -0.50000006, 0, 0, 0)
+mesh = SubResource("QuadMesh_85g3d")
+skeleton = NodePath("../../smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_choun")
+
+[node name="smoke" type="MeshInstance3D" parent="."]
+transform = Transform3D(40, 0, 0, 0, -90, 1.509958e-07, 0, -1.35896225e-05, -1, 1.7554512, 57.485477, 0)
+mesh = SubResource("QuadMesh_ya4ey")
+surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
+
+[node name="smoke2" type="MeshInstance3D" parent="smoke"]
+transform = Transform3D(0.8660254, 9.835062e-08, -0.0125, 3.3554624e-08, 1, 2.424322e-09, 20, -2.0403555e-05, 0.8660254, 0, 0, 0)
+mesh = SubResource("QuadMesh_ya4ey")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
+
+[node name="smoke3" type="MeshInstance3D" parent="smoke"]
+transform = Transform3D(0.49999997, 1.7034829e-07, -0.021650637, 5.8118317e-08, 1, 1.8102297e-09, 34.641018, -1.752365e-05, 0.49999997, 0, 0, 0)
+mesh = SubResource("QuadMesh_ya4ey")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
+
+[node name="smoke4" type="MeshInstance3D" parent="smoke"]
+transform = Transform3D(4.3711392e-08, -8.598085e-15, 0.025, -2.8254679e-08, 1, 7.333596e-17, -40, -5.721574e-06, 4.371139e-08, 0, 0, 0)
+mesh = SubResource("QuadMesh_ya4ey")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
+
+[node name="smoke6" type="MeshInstance3D" parent="smoke"]
+transform = Transform3D(0.50000006, -9.835063e-08, 0.021650635, -1.926374e-08, 1, 8.388657e-10, -34.641014, -6.7756923e-06, 0.50000006, 0, 0, 0)
+mesh = SubResource("QuadMesh_ya4ey")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
+
+[node name="smoke5" type="MeshInstance3D" parent="smoke"]
+transform = Transform3D(0.8660254, -1.7034829e-07, 0.012500002, 5.299942e-09, 1, 1.4529578e-09, -20.000002, -9.655598e-06, 0.8660254, 0, 0, 0)
+mesh = SubResource("QuadMesh_ya4ey")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
+
+[node name="smokeDEMO" type="MeshInstance3D" parent="."]
+transform = Transform3D(50, 0, 0, 0, -50, 7.54979e-06, 0, -7.54979e-06, -50, 58.250786, 38.004097, -0.49334717)
+visible = false
+mesh = SubResource("QuadMesh_ya4ey")
+surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
+
+[node name="flameDEMO" type="MeshInstance3D" parent="."]
+transform = Transform3D(25, 0, 0, 0, -4.371139e-08, 25, 0, -1, -1.0927847e-06, 88.81417, 38.0886, 0)
+visible = false
+mesh = SubResource("PlaneMesh_85g3d")
+skeleton = NodePath("../smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
+
+[node name="lavaDEMO" type="MeshInstance3D" parent="."]
+transform = Transform3D(40, 0, 0, 0, -40, 1.509958e-07, 0, -6.039832e-06, -1, 123.41786, 31.395485, 0)
+visible = false
+mesh = SubResource("QuadMesh_85g3d")
+skeleton = NodePath("../smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_choun")
