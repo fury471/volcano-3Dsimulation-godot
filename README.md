@@ -33,8 +33,6 @@ A real-time, 3D particle simulation of a volcanic eruption built with **Godot En
 | **Shift** | Boost Movement Speed |
 | **Tab** | Capture Mouse Cursor |
 | **Esc** | Release Mouse Cursor |
-* `FreeLookCamera.gd` - Development camera controller.
-* `Main.tscn` - The primary scene containing the environment and emitters.
 
 ---
 
