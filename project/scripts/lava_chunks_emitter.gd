@@ -35,8 +35,8 @@ extends Node3D
 @export_group("Simple Collision")
 @export var enable_ground_plane: bool = true
 @export var ground_y_local: float = -2.0
-@export var bounce: float = 0.25
-@export var kill_on_second_hit: bool = true
+@export var bounce: float = 0.05
+@export var kill_on_second_hit: bool = false
 
 # --- Internal State ---
 var _p_positions := PackedVector3Array()

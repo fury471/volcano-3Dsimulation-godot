@@ -1,8 +1,9 @@
-[gd_scene load_steps=30 format=3 uid="uid://cqow47bch5ocs"]
+[gd_scene load_steps=33 format=3 uid="uid://cqow47bch5ocs"]
 
 [ext_resource type="Script" uid="uid://csgl2aa0xda6a" path="res://scripts/eruption_controller.gd" id="1_85g3d"]
 [ext_resource type="Shader" uid="uid://ce7nvvl0dgncv" path="res://shaders/volcano.gdshader" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://d13ippknld2ce" path="res://scripts/smoke_emitter.gd" id="1_tefeu"]
+[ext_resource type="Script" uid="uid://yq40x8nj5yic" path="res://scripts/main_camera.gd" id="1_trceg"]
 [ext_resource type="Shader" uid="uid://du6jheh3otwtd" path="res://shaders/lava_pool.gdshader" id="2_0wfyh"]
 [ext_resource type="Shader" uid="uid://bqu76i0ru63xc" path="res://shaders/smoke_particle.gdshader" id="2_o6xl0"]
 [ext_resource type="Texture2D" uid="uid://2771b32udsh5" path="res://materials/rocks_normal.png" id="2_tbgi4"]
@@ -19,16 +20,16 @@ shader = ExtResource("2_o6xl0")
 shader_parameter/opacity = 0.35
 
 [sub_resource type="QuadMesh" id="QuadMesh_o6xl0"]
-size = Vector2(0.15, 0.15)
+size = Vector2(0.12, 0.12)
 
 [sub_resource type="MultiMesh" id="MultiMesh_tefeu"]
 mesh = SubResource("QuadMesh_o6xl0")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tipki"]
-albedo_color = Color(1, 0.28627452, 0.043137256, 1)
+albedo_color = Color(0.4491824, 0.1023008, 0, 1)
 roughness = 0.8
 emission_enabled = true
-emission = Color(1, 0.28627452, 0.043137256, 1)
+emission = Color(0.4304533, 0.09492808, 0, 1)
 emission_energy_multiplier = 2.0
 normal_enabled = true
 normal_scale = 16.0
@@ -46,7 +47,50 @@ rings = 4
 [sub_resource type="MultiMesh" id="MultiMesh_85g3d"]
 mesh = SubResource("SphereMesh_tipki")
 
+[sub_resource type="QuadMesh" id="QuadMesh_ya4ey"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_eb6dy"]
+render_priority = 0
+shader = ExtResource("7_tipki")
+shader_parameter/intensity = 0.898
+shader_parameter/smoke_count = 75
+shader_parameter/smoke_color = Vector3(0.18, 0.18, 0.18)
+shader_parameter/star_color = Vector3(0.55, 0.22, 0.05)
+shader_parameter/top_fade_start = 0.65
+shader_parameter/top_fade_end = 0.98
+
+[sub_resource type="QuadMesh" id="QuadMesh_85g3d"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_choun"]
+render_priority = 0
+shader = ExtResource("6_o6xl0")
+shader_parameter/intensity = 8.0
+shader_parameter/lava_count_f = 24.0
+shader_parameter/cycle = 3.0
+shader_parameter/gravity = 0.6
+shader_parameter/speed_y = 1.0
+shader_parameter/speed_x = 1.0
+shader_parameter/sim_scale = 0.35
+shader_parameter/hot_color = Vector3(1, 0.45, 0.08)
+shader_parameter/cool_color = Vector3(0.25, 0.05, 0.02)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_85g3d"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ya4ey"]
+render_priority = 0
+shader = ExtResource("6_tipki")
+shader_parameter/use_emission = false
+shader_parameter/intensity = 9.402000446595
+shader_parameter/core_tightness = 5.914000257165
+shader_parameter/base_falloff = 2.0690000745275
+shader_parameter/noise_scale = 15.8970007076075
+shader_parameter/noise_speed = 4.0
+shader_parameter/col_core = Vector3(1, 0.55, 0.2)
+shader_parameter/col_red = Vector3(0.95, 0.12, 0.05)
+shader_parameter/col_dark = Vector3(0.2, 0.02, 0.02)
+
 [sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
+custom_aabb = AABB(0, 0, 0, 100, 100, 100)
 size = Vector2(35, 35)
 subdivide_width = 200
 subdivide_depth = 200
@@ -106,62 +150,32 @@ shader_parameter/normal_uv_scale = 0.1
 shader_parameter/normal_scroll_0 = Vector2(0.02, 0.015)
 shader_parameter/normal_scroll_1 = Vector2(0.01, -0.015)
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_eb6dy"]
+
+[sub_resource type="Sky" id="Sky_trceg"]
+sky_material = SubResource("ProceduralSkyMaterial_eb6dy")
+
 [sub_resource type="Environment" id="Environment_tbgi4"]
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_85g3d"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ya4ey"]
-render_priority = 0
-shader = ExtResource("6_tipki")
-shader_parameter/use_emission = false
-shader_parameter/intensity = 9.402000446595
-shader_parameter/core_tightness = 5.914000257165
-shader_parameter/base_falloff = 2.0690000745275
-shader_parameter/noise_scale = 15.8970007076075
-shader_parameter/noise_speed = 4.0
-shader_parameter/col_core = Vector3(1, 0.55, 0.2)
-shader_parameter/col_red = Vector3(0.95, 0.12, 0.05)
-shader_parameter/col_dark = Vector3(0.2, 0.02, 0.02)
-
-[sub_resource type="QuadMesh" id="QuadMesh_85g3d"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_choun"]
-render_priority = 0
-shader = ExtResource("6_o6xl0")
-shader_parameter/intensity = 8.0
-shader_parameter/lava_count_f = 24.0
-shader_parameter/cycle = 3.0
-shader_parameter/gravity = 0.6
-shader_parameter/speed_y = 1.0
-shader_parameter/speed_x = 1.0
-shader_parameter/sim_scale = 0.35
-shader_parameter/hot_color = Vector3(1, 0.45, 0.08)
-shader_parameter/cool_color = Vector3(0.25, 0.05, 0.02)
-
-[sub_resource type="QuadMesh" id="QuadMesh_ya4ey"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_eb6dy"]
-render_priority = 0
-shader = ExtResource("7_tipki")
-shader_parameter/intensity = 0.898
-shader_parameter/smoke_count = 75
-shader_parameter/smoke_color = Vector3(0.18, 0.18, 0.18)
-shader_parameter/star_color = Vector3(0.55, 0.22, 0.05)
-shader_parameter/top_fade_start = 0.65
-shader_parameter/top_fade_end = 0.98
+background_mode = 2
+sky = SubResource("Sky_trceg")
+ambient_light_color = Color(0.98039216, 0.98039216, 0.98039216, 1)
 
 [node name="Main" type="Node3D"]
 
 [node name="MainCamera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.9420692, 0.3354187, 0, -0.3354187, 0.9420692, 0, 23.151665, 34.866455)
+transform = Transform3D(1, 0, 0, 0, 0.99998623, 0.0052359635, 0, -0.0052359635, 0.99998623, 0, 23.151665, 60.110916)
 keep_aspect = 0
-fov = 90.5
+near = 0.001
+script = ExtResource("1_trceg")
 
-[node name="VolcanoEruptionRoot" type="Node3D" parent="." node_paths=PackedStringArray("smoke_emitter", "lava_emitter")]
+[node name="VolcanoEruptionRoot" type="Node3D" parent="." node_paths=PackedStringArray("move_node", "smoke_emitter", "lava_emitter")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13, 0)
 script = ExtResource("1_85g3d")
+move_node = NodePath("FlameFake")
 smoke_emitter = NodePath("SmokeEmitter")
 lava_emitter = NodePath("LavaChunksEmitter")
+smoke_burst_count = 1000
+lava_burst_count = 200
 
 [node name="SmokeEmitter" type="Node3D" parent="VolcanoEruptionRoot" node_paths=PackedStringArray("target_multimesh_instance")]
 script = ExtResource("1_tefeu")
@@ -186,22 +200,117 @@ multimesh = SubResource("MultiMesh_tefeu")
 [node name="LavaChunksEmitter" type="Node3D" parent="VolcanoEruptionRoot" node_paths=PackedStringArray("target_multimesh_instance")]
 script = ExtResource("3_tipki")
 target_multimesh_instance = NodePath("LavaMM")
-max_chunks = 2560
-initial_burst_count = 2560
+max_chunks = 10000
+initial_burst_count = 10000
 lifetime_min = 24.0
-lifetime_max = 120.0
+lifetime_max = 240.0
+size_min = 0.03
 size_max = 0.25
 up_speed_min = 5.0
 up_speed_max = 40.0
 out_speed_max = 3.0
 gravity = -9.8
-angular_speed_min = 6.0
-angular_speed_max = 24.0
 ground_y_local = -13.0
 
 [node name="LavaMM" type="MultiMeshInstance3D" parent="VolcanoEruptionRoot/LavaChunksEmitter"]
 material_override = SubResource("StandardMaterial3D_tipki")
 multimesh = SubResource("MultiMesh_85g3d")
+
+[node name="SmokeLavaFake" type="Node3D" parent="VolcanoEruptionRoot"]
+
+[node name="smoke" type="MeshInstance3D" parent="VolcanoEruptionRoot/SmokeLavaFake"]
+transform = Transform3D(40, 0, 0, 0, -90, 1.509958e-07, 0, -1.35896225e-05, -1, 2.1, 44.485, 0)
+mesh = SubResource("QuadMesh_ya4ey")
+skeleton = NodePath("../../..")
+surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
+
+[node name="smoke2" type="MeshInstance3D" parent="VolcanoEruptionRoot/SmokeLavaFake/smoke"]
+transform = Transform3D(0.8660254, 9.835062e-08, -0.0125, 3.3554624e-08, 1, 2.424322e-09, 20, -2.0403555e-05, 0.8660254, 0, 0, 0)
+mesh = SubResource("QuadMesh_ya4ey")
+skeleton = NodePath("../../../..")
+surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
+
+[node name="smoke3" type="MeshInstance3D" parent="VolcanoEruptionRoot/SmokeLavaFake/smoke"]
+transform = Transform3D(0.49999997, 1.7034829e-07, -0.021650637, 5.8118317e-08, 1, 1.8102297e-09, 34.641018, -1.752365e-05, 0.49999997, 0, 0, 0)
+mesh = SubResource("QuadMesh_ya4ey")
+skeleton = NodePath("../../../..")
+surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
+
+[node name="smoke4" type="MeshInstance3D" parent="VolcanoEruptionRoot/SmokeLavaFake/smoke"]
+transform = Transform3D(4.3711392e-08, -8.598085e-15, 0.025, -2.8254679e-08, 1, 7.333596e-17, -40, -5.721574e-06, 4.371139e-08, 0, 0, 0)
+mesh = SubResource("QuadMesh_ya4ey")
+skeleton = NodePath("../../../..")
+surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
+
+[node name="smoke5" type="MeshInstance3D" parent="VolcanoEruptionRoot/SmokeLavaFake/smoke"]
+transform = Transform3D(0.8660254, -1.7034827e-07, 0.0125, 5.299942e-09, 1, 1.4529575e-09, -20.000002, -9.6556e-06, 0.8660253, 0, 0, 0)
+mesh = SubResource("QuadMesh_ya4ey")
+skeleton = NodePath("../../../..")
+surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
+
+[node name="smoke6" type="MeshInstance3D" parent="VolcanoEruptionRoot/SmokeLavaFake/smoke"]
+transform = Transform3D(0.50000006, -9.835063e-08, 0.021650635, -1.926374e-08, 1, 8.3886575e-10, -34.641014, -6.7756932e-06, 0.50000006, -1.0229647e-05, -0.00018209219, 0.0091514615)
+mesh = SubResource("QuadMesh_ya4ey")
+skeleton = NodePath("../../../..")
+surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
+
+[node name="lava" type="MeshInstance3D" parent="VolcanoEruptionRoot/SmokeLavaFake"]
+transform = Transform3D(30, 0, 0, 0, -25, 1.509958e-07, 0, -3.774895e-06, -1, 0.47670746, 9.36368, 0)
+visible = false
+mesh = SubResource("QuadMesh_85g3d")
+skeleton = NodePath("../smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_choun")
+
+[node name="lava2" type="MeshInstance3D" parent="VolcanoEruptionRoot/SmokeLavaFake/lava"]
+transform = Transform3D(0.49999994, 6.309195e-08, -0.028867513, 1.5691944e-07, 1, 6.5168266e-09, 25.980762, -4.8676798e-06, 0.49999997, 0, 0, 0)
+mesh = SubResource("QuadMesh_85g3d")
+skeleton = NodePath("../../smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_choun")
+
+[node name="lava3" type="MeshInstance3D" parent="VolcanoEruptionRoot/SmokeLavaFake/lava"]
+transform = Transform3D(-0.50000006, 6.309195e-08, -0.028867511, 1.5691944e-07, 1, 4.7699467e-10, 25.980762, -2.6821103e-06, -0.50000006, 0, 0, 0)
+mesh = SubResource("QuadMesh_85g3d")
+skeleton = NodePath("../../smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_choun")
+
+[node name="FlameFake" type="Node3D" parent="VolcanoEruptionRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -7.1355762, 0)
+
+[node name="flame" type="MeshInstance3D" parent="VolcanoEruptionRoot/FlameFake"]
+transform = Transform3D(8, 0, 0, 0, -2.1855694e-08, 30, 0, -0.5, -1.3113416e-06, 0, 0, 0)
+mesh = SubResource("PlaneMesh_85g3d")
+skeleton = NodePath("../../SmokeLavaFake/smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
+
+[node name="flame2" type="MeshInstance3D" parent="VolcanoEruptionRoot/FlameFake/flame"]
+transform = Transform3D(0.8660254, -0.0625, -8.195885e-08, 4, 0.8660254, -1.7568652e-07, 5.8281855e-09, -1.9520718e-10, 1, 0, 0, 0)
+mesh = SubResource("PlaneMesh_85g3d")
+skeleton = NodePath("../../../SmokeLavaFake/smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
+
+[node name="flame3" type="MeshInstance3D" parent="VolcanoEruptionRoot/FlameFake/flame"]
+transform = Transform3D(0.49999997, -0.10825318, -1.419569e-07, 6.9282036, 0.49999997, -6.55671e-07, 1.00947135e-08, -7.2852324e-10, 1, 0, 0, 0)
+mesh = SubResource("PlaneMesh_85g3d")
+skeleton = NodePath("../../../SmokeLavaFake/smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
+
+[node name="flame4" type="MeshInstance3D" parent="VolcanoEruptionRoot/FlameFake/flame"]
+transform = Transform3D(-4.371139e-08, -0.125, -1.639177e-07, 8, -4.3711385e-08, -1.311342e-06, 1.1656372e-08, -1.4570466e-09, 1, 0, 0, 0)
+mesh = SubResource("PlaneMesh_85g3d")
+skeleton = NodePath("../../../SmokeLavaFake/smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
+
+[node name="flame5" type="MeshInstance3D" parent="VolcanoEruptionRoot/FlameFake/flame"]
+transform = Transform3D(-0.50000006, -0.10825317, -1.419569e-07, 6.928203, -0.50000006, -1.9670126e-06, 1.00947135e-08, -2.1855697e-09, 1, 0, 0, 0)
+mesh = SubResource("PlaneMesh_85g3d")
+skeleton = NodePath("../../../SmokeLavaFake/smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
+
+[node name="flame6" type="MeshInstance3D" parent="VolcanoEruptionRoot/FlameFake/flame"]
+transform = Transform3D(-0.8660254, -0.06250001, -8.195886e-08, 4.0000005, -0.8660254, -2.4469969e-06, 5.8281864e-09, -2.7188856e-09, 1, 0, 0, 0)
+mesh = SubResource("PlaneMesh_85g3d")
+skeleton = NodePath("../../../SmokeLavaFake/smoke")
+surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
 
 [node name="VolcanoMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07280254, 0.026210785, 0.12777281)
@@ -218,102 +327,13 @@ surface_material_override/0 = SubResource("ShaderMaterial_jyhfs")
 environment = SubResource("Environment_tbgi4")
 
 [node name="Sunlight" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.3293593, -0.77395785, 0.5408438, 0.17504978, 0.61292493, 0.770507, -0.92783624, -0.15909906, 0.33735362, 0, 24.544146, 0)
+transform = Transform3D(1, 0, 0, 0, 0.8717446, 0.48996073, 0, -0.48996073, 0.8717446, 0, 26.199808, 21.09468)
 shadow_enabled = true
 shadow_blur = 2.0
 directional_shadow_split_1 = 0.2
 directional_shadow_split_2 = 0.4
 directional_shadow_split_3 = 0.8
 directional_shadow_blend_splits = true
-
-[node name="flame" type="MeshInstance3D" parent="."]
-transform = Transform3D(8, 0, 0, 0, -2.1855694e-08, 30, 0, -0.5, -1.3113416e-06, 0, 33.871075, 0)
-mesh = SubResource("PlaneMesh_85g3d")
-skeleton = NodePath("../smoke")
-surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
-
-[node name="flame2" type="MeshInstance3D" parent="flame"]
-transform = Transform3D(0.8660254, -0.0625, -8.195885e-08, 4, 0.8660254, -1.7568652e-07, 5.8281855e-09, -1.9520718e-10, 1, 0, 0, 0)
-mesh = SubResource("PlaneMesh_85g3d")
-skeleton = NodePath("../../smoke")
-surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
-
-[node name="flame3" type="MeshInstance3D" parent="flame"]
-transform = Transform3D(0.49999997, -0.10825318, -1.419569e-07, 6.9282036, 0.49999997, -6.55671e-07, 1.00947135e-08, -7.2852324e-10, 1, 0, 0, 0)
-mesh = SubResource("PlaneMesh_85g3d")
-skeleton = NodePath("../../smoke")
-surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
-
-[node name="flame4" type="MeshInstance3D" parent="flame"]
-transform = Transform3D(-4.371139e-08, -0.125, -1.639177e-07, 8, -4.3711385e-08, -1.311342e-06, 1.1656372e-08, -1.4570466e-09, 1, 0, 0, 0)
-mesh = SubResource("PlaneMesh_85g3d")
-skeleton = NodePath("../../smoke")
-surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
-
-[node name="flame5" type="MeshInstance3D" parent="flame"]
-transform = Transform3D(-0.50000006, -0.10825317, -1.419569e-07, 6.928203, -0.50000006, -1.9670126e-06, 1.00947135e-08, -2.1855697e-09, 1, 0, 0, 0)
-mesh = SubResource("PlaneMesh_85g3d")
-skeleton = NodePath("../../smoke")
-surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
-
-[node name="flame6" type="MeshInstance3D" parent="flame"]
-transform = Transform3D(-0.8660254, -0.06250001, -8.195886e-08, 4.0000005, -0.8660254, -2.4469969e-06, 5.8281864e-09, -2.7188856e-09, 1, 0, 0, 0)
-mesh = SubResource("PlaneMesh_85g3d")
-skeleton = NodePath("../../smoke")
-surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
-
-[node name="lava" type="MeshInstance3D" parent="."]
-transform = Transform3D(30, 0, 0, 0, -25, 1.509958e-07, 0, -3.774895e-06, -1, 0.47670746, 22.36368, 0)
-mesh = SubResource("QuadMesh_85g3d")
-skeleton = NodePath("../smoke")
-surface_material_override/0 = SubResource("ShaderMaterial_choun")
-
-[node name="lava2" type="MeshInstance3D" parent="lava"]
-transform = Transform3D(0.49999994, 6.309195e-08, -0.028867513, 1.5691944e-07, 1, 6.5168266e-09, 25.980762, -4.8676798e-06, 0.49999997, 0, 0, 0)
-mesh = SubResource("QuadMesh_85g3d")
-skeleton = NodePath("../../smoke")
-surface_material_override/0 = SubResource("ShaderMaterial_choun")
-
-[node name="lava3" type="MeshInstance3D" parent="lava"]
-transform = Transform3D(-0.50000006, 6.309195e-08, -0.028867511, 1.5691944e-07, 1, 4.7699467e-10, 25.980762, -2.6821103e-06, -0.50000006, 0, 0, 0)
-mesh = SubResource("QuadMesh_85g3d")
-skeleton = NodePath("../../smoke")
-surface_material_override/0 = SubResource("ShaderMaterial_choun")
-
-[node name="smoke" type="MeshInstance3D" parent="."]
-transform = Transform3D(40, 0, 0, 0, -90, 1.509958e-07, 0, -1.35896225e-05, -1, 1.7554512, 57.485477, 0)
-mesh = SubResource("QuadMesh_ya4ey")
-surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
-
-[node name="smoke2" type="MeshInstance3D" parent="smoke"]
-transform = Transform3D(0.8660254, 9.835062e-08, -0.0125, 3.3554624e-08, 1, 2.424322e-09, 20, -2.0403555e-05, 0.8660254, 0, 0, 0)
-mesh = SubResource("QuadMesh_ya4ey")
-skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
-
-[node name="smoke3" type="MeshInstance3D" parent="smoke"]
-transform = Transform3D(0.49999997, 1.7034829e-07, -0.021650637, 5.8118317e-08, 1, 1.8102297e-09, 34.641018, -1.752365e-05, 0.49999997, 0, 0, 0)
-mesh = SubResource("QuadMesh_ya4ey")
-skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
-
-[node name="smoke4" type="MeshInstance3D" parent="smoke"]
-transform = Transform3D(4.3711392e-08, -8.598085e-15, 0.025, -2.8254679e-08, 1, 7.333596e-17, -40, -5.721574e-06, 4.371139e-08, 0, 0, 0)
-mesh = SubResource("QuadMesh_ya4ey")
-skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
-
-[node name="smoke5" type="MeshInstance3D" parent="smoke"]
-transform = Transform3D(0.8660254, -1.7034827e-07, 0.0125, 5.299942e-09, 1, 1.4529575e-09, -20.000002, -9.6556e-06, 0.8660253, 0, 0, 0)
-mesh = SubResource("QuadMesh_ya4ey")
-skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
-
-[node name="smoke6" type="MeshInstance3D" parent="smoke"]
-transform = Transform3D(0.50000006, -9.835063e-08, 0.021650635, -1.926374e-08, 1, 8.388657e-10, -34.641014, -6.7756923e-06, 0.50000006, 0, 0, 0)
-mesh = SubResource("QuadMesh_ya4ey")
-skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
 
 [node name="smokeDEMO" type="MeshInstance3D" parent="."]
 transform = Transform3D(50, 0, 0, 0, -50, 7.54979e-06, 0, -7.54979e-06, -50, 58.250786, 38.004097, -0.49334717)
@@ -325,12 +345,12 @@ surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
 transform = Transform3D(25, 0, 0, 0, -4.371139e-08, 25, 0, -1, -1.0927847e-06, 88.81417, 38.0886, 0)
 visible = false
 mesh = SubResource("PlaneMesh_85g3d")
-skeleton = NodePath("../smoke")
+skeleton = NodePath("../VolcanoEruptionRoot/SmokeLavaFake/smoke")
 surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
 
 [node name="lavaDEMO" type="MeshInstance3D" parent="."]
 transform = Transform3D(40, 0, 0, 0, -40, 1.509958e-07, 0, -6.039832e-06, -1, 123.41786, 31.395485, 0)
 visible = false
 mesh = SubResource("QuadMesh_85g3d")
-skeleton = NodePath("../smoke")
+skeleton = NodePath("../VolcanoEruptionRoot/SmokeLavaFake/smoke")
 surface_material_override/0 = SubResource("ShaderMaterial_choun")

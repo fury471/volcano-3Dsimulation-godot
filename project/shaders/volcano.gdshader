@@ -246,5 +246,5 @@ void light() {
     DIFFUSE_LIGHT += diffuse * LIGHT_COLOR * ATTENUATION;
     SPECULAR_LIGHT += specular_color * spec_factor * LIGHT_COLOR * ATTENUATION;
 
-	
+
 }

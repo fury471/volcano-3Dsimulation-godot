@@ -14,6 +14,8 @@ uniform vec3 col_core = vec3(1.0, 0.55, 0.20); // 核心
 uniform vec3 col_red = vec3(0.95, 0.12, 0.05); // 主体
 uniform vec3 col_dark = vec3(0.20, 0.02, 0.02); // 边缘
 
+varying vec3 v_world_pos;
+
 float randomNum(float n) { //随机数生成函数
 	return fract(sin(n) * 98765.4321);
 }
@@ -32,8 +34,12 @@ float fbm(vec2 p) {
 		s += a * noise(p);
 		p *= 2.0;
 		a *= 0.5;
-		}
+	}
 	return s;
+}
+
+void vertex() {
+    v_world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 
 void fragment() {
@@ -58,6 +64,12 @@ void fragment() {
 
 	vec3 out_col = c * g * intensity;
 
+	float hidden_factor = 1.0;
+
+	if (v_world_pos.y < 0.0){
+		discard;
+	}
+
 	ALBEDO = out_col;
-	ALPHA = clamp(g * intensity, 0.0, 1.0);
+	ALPHA =  hidden_factor * clamp(g * intensity, 0.0, 1.0);
 }
