@@ -27,7 +27,7 @@ float noise(vec2 x) { //噪声生成函数
 	return mix( mix( randomNum(n+0.0), randomNum(n+1.0), f.x), mix(randomNum(n+50.0), randomNum(n+51.0), f.x), f.y);
 }
 
-float fbm(vec2 p) {
+float fbm(vec2 p) { //fbm分型叠加噪声，更自然一些
 	float s = 0.0;
 	float a = 0.5;
 	for (int i = 0; i < 5; i++) {
@@ -46,23 +46,23 @@ void fragment() {
 	float x = UV.x * 2.0 - 1.0;
 	float y = UV.y;
 
-	float fr = exp(-abs(x) * core_tightness);
-	float fh = pow(1.0 - y, base_falloff);
+	float horizontal_fade = exp(-abs(x) * core_tightness); //水平方向密度，越向边越淡
+	float vertical_fade = pow(1.0 - y, base_falloff); //竖直方向密度，越高越淡
 
 	vec2 np = vec2(x * noise_scale, y * noise_scale - TIME * noise_speed);
 	float n = fbm(np);
 	n = n * n;
 
-	float g = fr * fh * (0.20 + 1.60 * n);
-	g *= (1.0 - y*y);
+	float flame_density = horizontal_fade * vertical_fade * (0.20 + 1.60 * n);
+	flame_density *= (1.0 - y*y);
 
-	float heat = fr * (1.0 - y);
+	float heat = horizontal_fade * (1.0 - y);
 
-	heat = pow(clamp(heat, 0.0, 1.0), 2.2);
-	vec3 c = mix(col_dark, col_red, clamp(g * 1.2, 0.0, 1.0));
-	c = mix(c, col_core, heat);
+	heat = pow(clamp(heat, 0.0, 1.0), 2.0);
+	vec3 base_color = mix(col_dark, col_red, clamp(flame_density * 1.2, 0.0, 1.0));
+	base_color = mix(base_color, col_core, heat);
 
-	vec3 out_col = c * g * intensity;
+	vec3 final_color = base_color * flame_density * intensity;
 
 	float hidden_factor = 1.0;
 
@@ -70,6 +70,6 @@ void fragment() {
 		discard;
 	}
 
-	ALBEDO = out_col;
-	ALPHA =  hidden_factor * clamp(g * intensity, 0.0, 1.0);
+	ALBEDO = final_color;
+	ALPHA =  hidden_factor * clamp(flame_density * intensity, 0.0, 1.0);
 }
