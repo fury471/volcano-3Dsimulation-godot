@@ -33,7 +33,3 @@ A real-time, 3D particle simulation of a volcanic eruption built with **Godot En
 | **Shift** | Boost Movement Speed |
 | **Tab** | Capture Mouse Cursor |
 | **Esc** | Release Mouse Cursor |
-
----
-
-*Developed for educational purposes to demonstrate advanced GDScript optimization techniques.*
