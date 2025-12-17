@@ -3,7 +3,7 @@ extends Node3D
 @export var move_node: Node3D
 @export var y_hidden: float = -20.0
 @export var y_shown: float = 12.0
-@export var travel_time: float = 1.5  # seconds
+@export var travel_time: float = 1.6  # seconds
 @export var ease_type := Tween.EASE_OUT
 @export var trans_type := Tween.TRANS_SINE
 var _tween: Tween
@@ -12,7 +12,7 @@ var _tween: Tween
 @export var lava_emitter: Node
 
 @export var smoke_burst_count: int = 600
-@export var lava_burst_count: int = 120
+@export var lava_burst_count: int = 60
 
 func _ready() -> void:
 	if move_node:

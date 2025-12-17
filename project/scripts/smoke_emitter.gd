@@ -218,8 +218,7 @@ func _update_render_instances() -> void:
 		)
 		
 		# Construct Transform
-		# Basis.IDENTITY has no rotation
-		var basis_scaled := Basis.IDENTITY.scaled(Vector3.ONE * current_size)
+		var basis_scaled := Basis.IDENTITY.scaled(Vector3.ONE * current_size)# Basis.IDENTITY has no rotation
 		var t := Transform3D(basis_scaled, _p_positions[i])
 		
 		_multimesh.set_instance_transform(i, t)

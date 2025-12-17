@@ -29,12 +29,16 @@ albedo_color = Color(0.4491824, 0.1023008, 0, 1)
 roughness = 0.8
 emission_enabled = true
 emission = Color(0.4304533, 0.09492808, 0, 1)
-emission_energy_multiplier = 2.0
+emission_energy_multiplier = 2.5
 normal_enabled = true
 normal_scale = 16.0
 normal_texture = ExtResource("2_tbgi4")
+rim_enabled = true
+rim = 0.8
+rim_tint = 1.0
 grow = true
-grow_amount = 0.309
+grow_amount = 0.3
+proximity_fade_enabled = true
 stencil_flags = 2
 
 [sub_resource type="SphereMesh" id="SphereMesh_tipki"]
@@ -76,7 +80,7 @@ shader_parameter/col_red = Vector3(0.95, 0.12, 0.05)
 shader_parameter/col_dark = Vector3(0.2, 0.02, 0.02)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_7dm0k"]
-custom_aabb = AABB(0, 0, 0, 100, 100, 100)
+custom_aabb = AABB(0, 0, 0, 500, 500, 500)
 size = Vector2(35, 35)
 subdivide_width = 200
 subdivide_depth = 200
@@ -167,7 +171,7 @@ lava_burst_count = 200
 script = ExtResource("1_tefeu")
 target_multimesh_instance = NodePath("SmokeMM")
 max_particles = 15000
-initial_burst_count = 15000
+initial_burst_count = 1500
 lifetime_min = 20.0
 lifetime_max = 100.0
 size_start_max = 0.25
@@ -187,7 +191,7 @@ multimesh = SubResource("MultiMesh_tefeu")
 script = ExtResource("3_tipki")
 target_multimesh_instance = NodePath("LavaMM")
 max_chunks = 10000
-initial_burst_count = 10000
+initial_burst_count = 1000
 lifetime_min = 24.0
 lifetime_max = 240.0
 size_min = 0.03
@@ -210,6 +214,12 @@ mesh = SubResource("QuadMesh_ya4ey")
 skeleton = NodePath("../../..")
 surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
 
+[node name="smoke2" type="MeshInstance3D" parent="VolcanoEruptionRoot/SmokeLavaFake/smoke"]
+transform = Transform3D(-0.86604273, 5.872058e-07, 29.950108, -7.2409506e-08, 1, -1.762455e-05, -20.000082, -2.9048351e-08, -1.2968981, -0.09803829, 0.0028353333, -0.07148746)
+mesh = SubResource("QuadMesh_ya4ey")
+skeleton = NodePath("../../../..")
+surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
+
 [node name="smoke3" type="MeshInstance3D" parent="VolcanoEruptionRoot/SmokeLavaFake/smoke"]
 transform = Transform3D(0.32159555, 4.231932e-07, -0.4999479, 3.737596e-08, 1, 2.1163076e-07, 22.27768, -7.786853e-09, 0.007217135, 0, 0.065, 0)
 mesh = SubResource("QuadMesh_ya4ey")
@@ -224,12 +234,6 @@ surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
 
 [node name="smoke5" type="MeshInstance3D" parent="VolcanoEruptionRoot/SmokeLavaFake/smoke"]
 transform = Transform3D(0.8582545, -5.8737544e-07, 0.86518925, 5.252355e-09, 1, 5.091339e-07, -19.820427, -2.5169248e-08, 0.037464004, 0, 0.005, 0)
-mesh = SubResource("QuadMesh_ya4ey")
-skeleton = NodePath("../../../..")
-surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
-
-[node name="smoke2" type="MeshInstance3D" parent="VolcanoEruptionRoot/SmokeLavaFake/smoke"]
-transform = Transform3D(-0.86604273, 5.872058e-07, 29.950108, -7.24095e-08, 1, -1.762455e-05, -20.000084, -2.9047621e-08, -1.2968982, -0.09803829, 0.0028353333, -0.071487464)
 mesh = SubResource("QuadMesh_ya4ey")
 skeleton = NodePath("../../../..")
 surface_material_override/0 = SubResource("ShaderMaterial_eb6dy")
@@ -280,7 +284,6 @@ skeleton = NodePath("../../../SmokeLavaFake/smoke")
 surface_material_override/0 = SubResource("ShaderMaterial_ya4ey")
 
 [node name="VolcanoMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07280254, 0.026210785, 0.12777281)
 mesh = SubResource("PlaneMesh_7dm0k")
 surface_material_override/0 = SubResource("ShaderMaterial_ig7tw")
 
@@ -296,7 +299,6 @@ environment = SubResource("Environment_tbgi4")
 [node name="Sunlight" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.8717446, 0.48996073, 0, -0.48996073, 0.8717446, 0, 26.199808, 21.09468)
 shadow_enabled = true
-shadow_blur = 2.0
 directional_shadow_split_1 = 0.2
 directional_shadow_split_2 = 0.4
 directional_shadow_split_3 = 0.8
