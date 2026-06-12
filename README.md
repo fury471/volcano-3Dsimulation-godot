@@ -2,6 +2,10 @@
 
 A real-time 3D volcano eruption simulation built with Godot Engine for a Computer Graphics course project.
 
+## Preview
+
+![Volcano eruption simulation preview](docs/screenshots/volcano-eruption.png)
+
 ## Requirements
 
 - Godot Engine 4.6 or newer
