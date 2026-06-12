@@ -10,7 +10,8 @@ config_version=5
 
 [application]
 
-config/name="New Game Project"
+config/name="Volcano 3D Simulation"
+config/description="A real-time 3D volcano eruption simulation for a Computer Graphics course project."
 run/main_scene="uid://cqow47bch5ocs"
-config/features=PackedStringArray("4.5", "Forward Plus")
+config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
